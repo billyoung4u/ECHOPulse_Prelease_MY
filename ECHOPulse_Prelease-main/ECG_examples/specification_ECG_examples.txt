@@ -1,0 +1,34 @@
+样本库。
+
+存放的 .pkl 格式的心电图的时间序列数据
+这些 .pkl 文件里存放的是经过预处理、可以直接喂给 ST-MEM 模型的输入的数字矩阵。
+项目中提供的 echo_inference.ipynb 脚本需要读取心电图（ECG）数据才能生成视频。
+
+该文件参与的整个流程如下：
+1.数据准备：ECG_examples文件夹中的 .pkl 文件存储了预处理后的心电图时间序列数据，
+这些数据可以直接作为模型的输入
+
+2.数据编码：通过 EchoPulse_pytorch文件夹中的phenaki_pytorch_ekg.py 文件中的 encode_ekg 函数，
+使用 ST-MEM 模型将 ECG 数据转换为特征（ECG Embeddings）。
+（这里的 encode_ekg 对应的就是架构图中的 ECG-FM使用 ST-MEM 模型）
+
+
+"""
+根据上下文，encode_ekg 并不是一个独立定义的函数，而是通过加载 ST-MEM 模型实例化后
+赋值给 self.encode_ekg 的。
+具体的函数体实际上是 ST-MEM 模型的前向传播逻辑（forward 方法）。
+该模型的定义应该在 EchoPulse_pytorch/STMEM/models/encoder.py 文件中。
+
+
+因此，encode_ekg 的实际逻辑是 ST-MEM 模型的前向传播方法（forward 方法）。
+你可以在 EchoPulse_pytorch/STMEM/models/encoder.py 文件中查找 model_name 对应的类定义，
+并查看其 forward 方法。
+"""
+
+3. ST-MEM 模型将 ECG 数据转换为 ECG Embeddings。特征处理
+
+4. 生成的特征（Embeddings）随后进入 Transformer，与视频 Tokens 结合。
+
+5. 将生成的 ECG Embeddings 输入到视频生成模型中，生成对应的视频内容
+
+
