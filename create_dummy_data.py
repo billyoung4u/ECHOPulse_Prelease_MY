@@ -19,7 +19,7 @@ height, width = 128, 128
 
 print(f"正在生成 {num_samples} 个测试样本...")
 
-# 3. 生成伪造视频和心电图数据
+# 3. 生成伪造视频和心电图数据？？？test？
 for i in range(num_samples):
     # 文件名必须包含数字，因为代码里的 sort_key 依赖数字排序
     # 模拟真实文件名格式
