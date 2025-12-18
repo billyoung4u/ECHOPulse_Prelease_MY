@@ -27,12 +27,14 @@ from torchvision.utils import make_grid, save_image
 
 from einops import rearrange
 
-from EchoPulse_pytorch.optimizer import get_optimizer, LinearWarmup_CosineAnnealing
+
 
 from ema_pytorch import EMA
 
-from EchoPulse_pytorch.cvivit import CViViT
-from EchoPulse_pytorch.data import ImageDataset, VideoDataset, video_tensor_to_gif, video_to_tensor, video_tensor_to_pil_first_image
+from .optimizer import get_optimizer, LinearWarmup_CosineAnnealing
+from .cvivit import CViViT
+from .data import ImageDataset, VideoDataset, video_tensor_to_gif, video_to_tensor, video_tensor_to_pil_first_image
+
 from torchvision.transforms import Compose, ToTensor, ToPILImage, Resize, CenterCrop, RandomHorizontalFlip
 
 from accelerate import Accelerator

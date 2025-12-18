@@ -13,10 +13,9 @@ from torch import nn, einsum
 from einops import rearrange, repeat, pack, unpack
 from einops.layers.torch import Rearrange
 
-from EchoPulse_pytorch.t5 import t5_encode_text, get_encoded_dim, DEFAULT_T5_NAME
-
-from EchoPulse_pytorch.cvivit import CViViT
-from EchoPulse_pytorch.attention import Attention, Transformer, ContinuousPositionBias
+from .t5 import t5_encode_text, get_encoded_dim, DEFAULT_T5_NAME
+from .cvivit import CViViT
+from .attention import Attention, Transformer, ContinuousPositionBias
 
 # helpers
 

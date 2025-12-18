@@ -11,7 +11,7 @@ from torch.autograd import grad as torch_grad
 import torchvision
 
 from torch.autograd import Variable
-from EchoPulse_pytorch.frozen_models.pytorch_i3d.pytorch_i3d import InceptionI3d
+from .frozen_models.pytorch_i3d.pytorch_i3d import InceptionI3d
 
 from einops import rearrange, repeat, pack, unpack
 from einops.layers.torch import Rearrange

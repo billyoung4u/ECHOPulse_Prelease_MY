@@ -13,7 +13,7 @@ from torch import nn, einsum
 from einops import rearrange, repeat, pack, unpack
 from einops.layers.torch import Rearrange
 
-from EchoPulse_pytorch.t5 import t5_encode_text, get_encoded_dim, DEFAULT_T5_NAME
+from .t5 import t5_encode_text, get_encoded_dim, DEFAULT_T5_NAME
 import sys
 import os
 
@@ -22,10 +22,10 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), '../..'))
 sys.path.append(parent_dir)
 
 import yaml
-import EchoPulse_pytorch.STMEM.models.encoder as encoder
+import STMEM.models.encoder as encoder
 
-from EchoPulse_pytorch.cvivit import CViViT
-from EchoPulse_pytorch.attention import Attention, Transformer, ContinuousPositionBias
+from .cvivit import CViViT
+from .attention import Attention, Transformer, ContinuousPositionBias
 
 # helpers
 

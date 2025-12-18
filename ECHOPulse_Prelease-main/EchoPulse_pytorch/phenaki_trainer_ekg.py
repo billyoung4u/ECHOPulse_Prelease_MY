@@ -28,12 +28,12 @@ from einops.layers.torch import Rearrange
 from PIL import Image
 from tqdm.auto import tqdm
 
-from EchoPulse_pytorch.optimizer import get_optimizer
+from .optimizer import get_optimizer
 from accelerate import Accelerator
 
 # from phenaki_pytorch.phenaki_pytorch import Phenaki
-from EchoPulse_pytorch.phenaki_pytorch_ekg import Phenaki
-from EchoPulse_pytorch.data import ImageDataset, VideoDataset, video_tensor_to_gif, DataLoader
+from .phenaki_pytorch_ekg import Phenaki
+from .data import ImageDataset, VideoDataset, video_tensor_to_gif, DataLoader
 
 import os
 import sys
@@ -42,7 +42,7 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), '../..'))
 sys.path.append(parent_dir)
 
 # 错误：这里引用了带 _preprocess 的旧文件
-from EchoPulse_pytorch.dataset_private_mp4_preprocess import EchoDataset_from_Video
+from .dataset_private_mp4 import EchoDataset_from_Video
 
 # constants
 from typing import Union
