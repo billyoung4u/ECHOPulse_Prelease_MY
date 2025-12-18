@@ -416,18 +416,18 @@ class EchoDataset_from_Video(Dataset):
 
     def __getitem__(self, index):
         path = self.paths[index]
-        
+
         # print (path)
 
         #ekg_path = Path(str(path).replace('/video/', '/ekg/').replace('.mp4', '.pkl'))
         # 这里用到了新的ekg文件夹路径，伪造的
-        # 在 dataset_private_mp4.py 中找到类似这样的行：
-        # ekg_path = Path(str(path).replace('/video/', '/ekg/').replace('.mp4', '.pkl'))
-
-        # ✅ 建议替换为更稳健的写法：
+        # 强制将路径中的 'mp4' 替换为 'ekg'
         path_str = str(path)
-        # 只要路径里包含 'mp4' 就替换为 'ekg'
-        ekg_path_str = path_str.replace('mp4', 'ekg').replace('.mp4', '.pkl')
+        if 'mp4' in path_str:
+            ekg_path_str = path_str.replace('mp4', 'ekg').replace('.mp4', '.pkl')
+        else:
+            # 兼容旧逻辑
+            ekg_path_str = path_str.replace('/video/', '/ekg/').replace('.mp4', '.pkl')
         ekg_path = Path(ekg_path_str)
 
 

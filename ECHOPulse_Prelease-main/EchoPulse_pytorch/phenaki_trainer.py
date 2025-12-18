@@ -271,8 +271,8 @@ class PhenakiTrainer(object):
             assert exists(folder)
             self.ds = VideoDataset(folder, self.image_size, num_frames = num_frames, sample_texts=self.sample_texts)
 
-        dl = DataLoader(self.ds, batch_size = batch_size, shuffle = True, pin_memory = True, num_workers = cpu_count())
-
+        # dl = DataLoader(self.ds, batch_size = batch_size, shuffle = True, pin_memory = True, num_workers = cpu_count())
+        dl = DataLoader(self.ds, batch_size=batch_size, pin_memory=True, num_workers=0)
         dl = self.accelerator.prepare(dl)
         self.dl = cycle(dl)
 
