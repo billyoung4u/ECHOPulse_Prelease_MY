@@ -42,6 +42,7 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), '../..'))
 sys.path.append(parent_dir)
 
 # 错误：这里引用了带 _preprocess 的旧文件
+# 使用相对路径，且必须引用正确的那个文件
 from .dataset_private_mp4 import EchoDataset_from_Video
 
 # constants

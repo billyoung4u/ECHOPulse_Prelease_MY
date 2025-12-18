@@ -22,7 +22,8 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), '../..'))
 sys.path.append(parent_dir)
 
 import yaml
-import STMEM.models.encoder as encoder
+# 使用相对路径，从当前包(.STMEM)里导入
+from .STMEM.models import encoder
 
 from .cvivit import CViViT
 from .attention import Attention, Transformer, ContinuousPositionBias
