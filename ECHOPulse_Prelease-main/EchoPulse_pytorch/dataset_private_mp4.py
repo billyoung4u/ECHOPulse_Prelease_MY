@@ -196,7 +196,6 @@ def gif_to_tensor(
 
 # handle reading and writing mp4
 
-
 def video_to_tensor(
         path: str,
         transform,  # Path of the video to be imported
@@ -206,20 +205,21 @@ def video_to_tensor(
 
     video = cv2.VideoCapture(path)
 
-    # total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT)) # 不需要这行，节省时间
+    # 优化：不需要获取总帧数，节省时间
+    # total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 
     frames = []
     check = True
 
     while check:
-        # 【核心修复】一旦读取了 num_frames (例如11帧)，立刻停止读取！
+        # 【关键修改】一旦读够了需要的帧数（例如11帧），立刻停止读取！
         if num_frames > 0 and len(frames) >= num_frames:
             break
 
         check, frame = video.read()
 
         if not check:
-            break  # 读不到帧了，直接跳出
+            break  # 读不到帧了，直接跳出循环
 
         frame = transform(frame)
 
@@ -230,13 +230,16 @@ def video_to_tensor(
     # 处理空视频防止报错
     if len(frames) == 0:
         print(f"Warning: No frames read from {path}")
+        # 返回一个全黑的 dummy tensor
         return torch.zeros(3, num_frames if num_frames > 0 else 1, 128, 128)
 
-    # 堆叠帧
+    # 堆叠数据
     frames = np.array(np.concatenate(frames, axis=0))
     frames = rearrange(frames, 'f c h w -> c f h w')
 
     frames_torch = torch.tensor(frames).float()
+
+    # frames_torch = process_ultrasound_image(frames_torch)
 
     return frames_torch
 
