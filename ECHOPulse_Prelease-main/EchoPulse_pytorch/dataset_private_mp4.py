@@ -198,42 +198,46 @@ def gif_to_tensor(
 
 
 def video_to_tensor(
-    path: str,
-    transform,              # Path of the video to be imported
-    num_frames=-1,        # Number of frames to be stored in the output tensor
-    crop_size=None
-) -> torch.Tensor:          # shape (1, channels, frames, height, width)
+        path: str,
+        transform,  # Path of the video to be imported
+        num_frames=-1,  # Number of frames to be stored in the output tensor
+        crop_size=None
+) -> torch.Tensor:  # shape (1, channels, frames, height, width)
 
     video = cv2.VideoCapture(path)
 
-    total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    
-    # print ("PATH", path)
-    # print ("TOTAL frame : ",total_frames )
+    # total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT)) # 不需要这行，节省时间
+
     frames = []
     check = True
+
     while check:
+        # 【核心修复】一旦读取了 num_frames (例如11帧)，立刻停止读取！
+        if num_frames > 0 and len(frames) >= num_frames:
+            break
+
         check, frame = video.read()
 
         if not check:
-            continue
+            break  # 读不到帧了，直接跳出
 
         frame = transform(frame)
 
-        # if exists(crop_size):
-        #    frame = crop_center(frame, *pair(crop_size))
-
         frames.append(rearrange(frame, '... -> 1 ...'))
 
-    # convert list of frames to numpy array
+    video.release()  # 显式释放资源
+
+    # 处理空视频防止报错
+    if len(frames) == 0:
+        print(f"Warning: No frames read from {path}")
+        return torch.zeros(3, num_frames if num_frames > 0 else 1, 128, 128)
+
+    # 堆叠帧
     frames = np.array(np.concatenate(frames, axis=0))
     frames = rearrange(frames, 'f c h w -> c f h w')
 
     frames_torch = torch.tensor(frames).float()
 
-    #这里为了快速复现注释掉了下行
-    #frames_torch = process_ultrasound_image(frames_torch)
-    
     return frames_torch
 
 
@@ -420,15 +424,11 @@ class EchoDataset_from_Video(Dataset):
         # print (path)
 
         #ekg_path = Path(str(path).replace('/video/', '/ekg/').replace('.mp4', '.pkl'))
+        # 只要路径里有 mp4，就替换为 ekg。这样写最稳。
+        ekg_path = Path(str(path).replace('mp4', 'ekg').replace('.mp4', '.pkl'))
         # 这里用到了新的ekg文件夹路径，伪造的
-        # 强制将路径中的 'mp4' 替换为 'ekg'
-        path_str = str(path)
-        if 'mp4' in path_str:
-            ekg_path_str = path_str.replace('mp4', 'ekg').replace('.mp4', '.pkl')
-        else:
-            # 兼容旧逻辑
-            ekg_path_str = path_str.replace('/video/', '/ekg/').replace('.mp4', '.pkl')
-        ekg_path = Path(ekg_path_str)
+
+
 
 
 

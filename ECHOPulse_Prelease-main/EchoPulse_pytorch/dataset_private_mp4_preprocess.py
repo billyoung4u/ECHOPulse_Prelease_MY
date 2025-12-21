@@ -295,48 +295,41 @@ def process_ekg(ekg_data, target_length=2250, repetitions=16):
 
 
 def video_to_tensor(
-    path: str,
-    transform,              # Path of the video to be imported
-    num_frames=-1,        # Number of frames to be stored in the output tensor
-    crop_size=None
-) -> torch.Tensor:          # shape (1, channels, frames, height, width)
+        path: str,
+        transform,  # Path of the video to be imported
+        num_frames=-1,  # Number of frames to be stored in the output tensor
+        crop_size=None
+) -> torch.Tensor:  # shape (1, channels, frames, height, width)
 
     video = cv2.VideoCapture(path)
 
-    total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    
-    # print ("PATH", path)
-    # print ("TOTAL frame : ",total_frames )
+    # 优化：不需要获取总帧数，这一步在某些系统上也很慢，且这里没有用到
+    # total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+
     frames = []
     check = True
-    
-    shear_x = random.uniform(-5, 5)
-    shear_y = random.uniform(-5, 5)
-    contrast_factor = random.uniform(0.6, 1.4)
 
     while check:
+        # 【至关重要的一行】如果已经读够了需要的帧数（比如11帧），立刻强制停止！
+        if num_frames > 0 and len(frames) >= num_frames:
+            break
+
         check, frame = video.read()
 
         if not check:
-            continue
+            break  # 读完了或出错了，直接跳出，而不是 continue
 
-        # 고정된 augmentation 값들로 transform 적용
-        frame = transform(frame, shear_x, shear_y, contrast_factor)
-        
+        frame = transform(frame)
+
         frames.append(rearrange(frame, '... -> 1 ...'))
-         
-    # while check:
-    #     check, frame = video.read()
 
-    #     if not check:
-    #         continue
+    video.release()  # 显式释放视频文件，防止内存泄漏或文件占用
 
-    #     frame = transform(frame)
-
-    #     # if exists(crop_size):
-    #     #    frame = crop_center(frame, *pair(crop_size))
-
-        # frames.append(rearrange(frame, '... -> 1 ...'))
+    # 处理视频损坏或为空的情况，防止报错卡死
+    if len(frames) == 0:
+        print(f"Warning: No frames read from {path}")
+        # 返回一个全黑的占位符
+        return torch.zeros(3, num_frames if num_frames > 0 else 1, 128, 128)
 
     # convert list of frames to numpy array
     frames = np.array(np.concatenate(frames, axis=0))
@@ -344,8 +337,6 @@ def video_to_tensor(
 
     frames_torch = torch.tensor(frames).float()
 
-    frames_torch = process_ultrasound_image(frames_torch)
-    
     return frames_torch
 
 

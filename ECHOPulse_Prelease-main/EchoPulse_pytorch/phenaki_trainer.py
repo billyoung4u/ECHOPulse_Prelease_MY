@@ -31,7 +31,7 @@ from tqdm.auto import tqdm
 from .optimizer import get_optimizer
 from accelerate import Accelerator
 
-from E.phenaki_pytorch import Phenaki
+from .phenaki_pytorch import Phenaki
 
 from .data import ImageDataset, VideoDataset, video_tensor_to_gif, DataLoader
 
