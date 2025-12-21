@@ -203,6 +203,7 @@ def video_to_tensor(
         crop_size=None
 ) -> torch.Tensor:  # shape (1, channels, frames, height, width)
 
+    print(f"正在读取视频 (目标帧数={num_frames}): {path}")
     video = cv2.VideoCapture(path)
 
     # 优化：不需要获取总帧数，节省时间
@@ -428,7 +429,8 @@ class EchoDataset_from_Video(Dataset):
 
         #ekg_path = Path(str(path).replace('/video/', '/ekg/').replace('.mp4', '.pkl'))
         # 只要路径里有 mp4，就替换为 ekg。这样写最稳。
-        ekg_path = Path(str(path).replace('mp4', 'ekg').replace('.mp4', '.pkl'))
+        ekg_filename = f"{path.stem}.pkl"
+        ekg_path = Path(self.folder_ekg) / ekg_filename
         # 这里用到了新的ekg文件夹路径，伪造的
 
 

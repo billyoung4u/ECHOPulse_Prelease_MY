@@ -88,9 +88,20 @@ phenaki = Phenaki(
 ).cuda()
 
 # --- 第五步：初始化训练器 ---
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# 数据集在上一级目录，拼出绝对路径，避免相对路径找不到导致数据集为空
+project_root = os.path.abspath(os.path.join(current_dir, '..'))
+dataset_dir = os.path.join(project_root, 'MyToyDataset')
+
+# 确保输出目录存在，否则写入损失文件会报错
+losses_dir = os.path.join(current_dir, 'results_step2')
+os.makedirs(losses_dir, exist_ok=True)
+results_dir = os.path.join(current_dir, 'results_step2_samples')
+os.makedirs(results_dir, exist_ok=True)
+
 trainer = PhenakiTrainer(
     phenaki = phenaki,
-    folder =  'MyToyDataset', # 【关键！】同样需要填入你的视频数据路径
+    folder =  dataset_dir, # 【关键！】同样需要填入你的视频数据路径
     train_on_images = False,# 我们训练的是视频，不是单张图片
     #为了快速复现改了，下方原值是50
     batch_size = 1,
@@ -109,18 +120,17 @@ trainer = PhenakiTrainer(
     #为了快速复现改了，下方原值是10000
     save_and_sample_every = 50,# 每 10000 步保存一次模型和采样一次
     num_samples = 25, # 每次采样生成 25 个视频
-    results_folder = '',# 采样结果保存路径
+    results_folder = results_dir,# 采样结果保存路径
     amp = True,## 是否使用自动混合精度
     fp16 = True,## 是否使用半精度浮点数
     split_batches = True,## 是否拆分批次以节省内存
     # 下面这两个参数如果不跑文本生成，可以忽略
     convert_image_to = None,## 是否转换图像格式，None代表不转换
     sample_texts_file_path = './test_2c4c.txt', # 采样时使用的文本文件路径
-    losses_file_folder = './results_step2',# 损失文件保存路径
+    losses_file_folder = losses_dir,# 损失文件保存路径
 
 
 )
 
 # --- 开始 Step 2 训练 ---
 trainer.train()
-

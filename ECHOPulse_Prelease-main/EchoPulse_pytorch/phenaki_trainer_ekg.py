@@ -320,6 +320,9 @@ class PhenakiTrainer(object):
         self.train_on_images = train_on_images
 
         self.ds = EchoDataset_from_Video(folder, self.image_size, num_frames = num_frames, sample_texts=self.sample_texts)
+        # 快速失败：如果数据集为空，cycle(next(self.dl)) 会永远阻塞，进度条不动
+        if len(self.ds) == 0:
+            raise ValueError(f"No training samples found under '{folder}'. Check the folder path and that mp4/ekg pairs exist.")
 
         # self.sampler = DistributedSampler(self.ds, num_replicas=self.world_size, rank=self.rank, shuffle=True)
 
@@ -570,4 +573,3 @@ class PhenakiTrainer(object):
                         file.write(f'{l}\n')
 
         self.print('training complete')
-
