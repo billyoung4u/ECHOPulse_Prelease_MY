@@ -303,42 +303,39 @@ def video_to_tensor(
 
     video = cv2.VideoCapture(path)
 
-    # 优化：不需要获取总帧数，这一步在某些系统上也很慢，且这里没有用到
-    # total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-
     frames = []
     check = True
 
+    # print(f"正在读取视频: {path} (目标帧数: {num_frames})") # 调试用，如果太刷屏可以注释掉
+
     while check:
-        # 【至关重要的一行】如果已经读够了需要的帧数（比如11帧），立刻强制停止！
+        # 【核心修改在这里！！！】
+        # 如果已经读够了 11 帧，强制立刻停止！不要再读了！
         if num_frames > 0 and len(frames) >= num_frames:
+            # print("  -> 已达到目标帧数，停止读取。")
             break
 
         check, frame = video.read()
 
         if not check:
-            break  # 读完了或出错了，直接跳出，而不是 continue
+            break  # 读不到帧了，直接跳出循环
 
         frame = transform(frame)
-
         frames.append(rearrange(frame, '... -> 1 ...'))
 
-    video.release()  # 显式释放视频文件，防止内存泄漏或文件占用
+    video.release()  # 释放文件占用
 
-    # 处理视频损坏或为空的情况，防止报错卡死
+    # 处理读取失败或空视频的情况
     if len(frames) == 0:
         print(f"Warning: No frames read from {path}")
-        # 返回一个全黑的占位符
         return torch.zeros(3, num_frames if num_frames > 0 else 1, 128, 128)
 
-    # convert list of frames to numpy array
     frames = np.array(np.concatenate(frames, axis=0))
     frames = rearrange(frames, 'f c h w -> c f h w')
 
     frames_torch = torch.tensor(frames).float()
 
     return frames_torch
-
 
 
 
